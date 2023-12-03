@@ -9,5 +9,4 @@ class BitaApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
