@@ -1,4 +1,4 @@
-package com.goorm.BITA;
+package com.goorm.BITA.domain.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
