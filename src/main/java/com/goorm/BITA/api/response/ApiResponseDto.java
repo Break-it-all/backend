@@ -1,5 +1,6 @@
-package com.goorm.BITA.api;
+package com.goorm.BITA.api.response;
 
+import com.goorm.BITA.common.enums.ResponseCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,28 +13,25 @@ import java.util.Map;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiResponseDto<T> {
-    private String status; // 추후에 enum으로 변경
+    private ResponseCode code;
     private T data;
     private String message;
 
-    private ApiResponseDto(String status, T data, String message) {
-        this.status = status;
+    private ApiResponseDto(ResponseCode status, T data, String message) {
+        this.code = status;
         this.data = data;
         this.message = message;
     }
     public static <T> ApiResponseDto<T> successResponse(T data) {
-        // TODO: status를 enum으로 변경
-        return new ApiResponseDto<>("success", data, null);
+        return new ApiResponseDto<>(ResponseCode.SUCCESS, data, null);
     }
 
     public static ApiResponseDto<?> successWithoutDataResponse() {
-        // TODO: status를 enum으로 변경
-        return new ApiResponseDto<>("success", null, null);
+        return new ApiResponseDto<>(ResponseCode.SUCCESS, null, null);
     }
 
-    public static ApiResponseDto<?> errorResponse(String message) {
-        // TODO: status를 enum으로 변경
-        return new ApiResponseDto<>("error", null, message);
+    public static ApiResponseDto<?> errorResponse(ResponseCode code) {
+        return new ApiResponseDto<>(code, null, code.getMessage());
     }
 
     public static ApiResponseDto<?> failResponse(BindingResult bindingResult) {
@@ -47,7 +45,6 @@ public class ApiResponseDto<T> {
                 errors.put(error.getObjectName(), error.getDefaultMessage());
             }
         });
-        // TODO: status를 enum으로 변경
-        return new ApiResponseDto<>("fail", errors, null);
+        return new ApiResponseDto<>(ResponseCode.VALIDATION_ERROR, errors, null);
     }
 }

@@ -1,6 +1,6 @@
 package com.goorm.BITA;
 
-import com.goorm.BITA.api.ApiResponseDto;
+import com.goorm.BITA.api.response.ApiResponseDto;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
