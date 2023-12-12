@@ -1,6 +1,6 @@
 package com.goorm.BITA;
 
-import com.goorm.BITA.api.ApiFormat;
+import com.goorm.BITA.api.ApiResponseDto;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +46,7 @@ public class TestController {
     }
 
     @GetMapping("/test3")
-    public ApiFormat<TestResponseDto> test3 () {
-        return ApiFormat.successResponse(new TestResponseDto("test3", 3));
+    public ApiResponseDto<TestResponseDto> test3 () {
+        return ApiResponseDto.successResponse(new TestResponseDto("test3", 3));
     }
 }
