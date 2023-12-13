@@ -13,6 +13,7 @@ public class UserSignUpRequest {
     private String email;
     private String name;
     private String password;
+    private long authId;
 
     public User toEntity() {
         return new User(email, name, password);

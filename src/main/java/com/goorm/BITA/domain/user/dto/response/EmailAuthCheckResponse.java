@@ -1,4 +1,4 @@
-package com.goorm.BITA.domain.user.dto.request;
+package com.goorm.BITA.domain.user.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserUpdatePasswordRequest {
+public class EmailAuthCheckResponse {
     private String email;
-    private String password;
-    private long authId;
+    private boolean emailVerified;
 }

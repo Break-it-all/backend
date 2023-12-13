@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserUpdatePasswordRequest {
+public class EmailAuthCheckRequest {
     private String email;
-    private String password;
-    private long authId;
+    private long id;
 }
