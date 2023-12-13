@@ -75,10 +75,10 @@ public class UserService {
     public void resetPassword(UserUpdatePasswordRequest userUpdatePasswordRequest) {
         User user = userRepository.findByEmail(userUpdatePasswordRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("해당 유저가 존재하지 않습니다."));
-        // TODO: EmailAuth ID 확인 로직 추가
-        EmailAuth emailAuth = getEmailAuth(userUpdatePasswordRequest.getEmail(), userUpdatePasswordRequest.getAuthId());
 
+        EmailAuth emailAuth = getEmailAuth(userUpdatePasswordRequest.getEmail(), userUpdatePasswordRequest.getAuthId());
         emailAuth.setUser(user);
+
         user.updatePassword(userUpdatePasswordRequest.getPassword());
     }
 
