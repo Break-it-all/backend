@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/email-auth")
 public class EmailAuthController {
     final EmailAuthService emailAuthService;
 
     /* 인증을 위한 이메일 발송 */
-    @PostMapping("/api/email-auth")
+    @PostMapping
     public ApiResponseDto<EmailAuthCreateResponse> sendEmail(
             @RequestBody EmailAuthCreateRequest emailAuthCreateRequest
     ) {
@@ -24,7 +25,7 @@ public class EmailAuthController {
     }
 
     /* 이메일 인증 확인 */
-    @GetMapping("/api/email-auth")
+    @GetMapping
     public ApiResponseDto<EmailAuthCheckResponse> checkEmailAuth(
             @RequestBody EmailAuthCheckRequest emailAuthCheckRequest
             ) {
@@ -36,7 +37,7 @@ public class EmailAuthController {
     * 이메일에 전송된 URL 클릭 시
     * 해당 요청을 여기서 처리
     * */
-    @GetMapping("/email-auth")
+    @GetMapping("/verify")
     public ApiResponseDto<?> emailAuth(
             @RequestParam String emailToken
     ) {
