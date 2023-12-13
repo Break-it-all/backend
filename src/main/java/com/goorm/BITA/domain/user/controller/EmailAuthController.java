@@ -3,6 +3,8 @@ package com.goorm.BITA.domain.user.controller;
 import com.goorm.BITA.api.response.ApiResponseDto;
 import com.goorm.BITA.domain.user.dto.request.EmailAuthCheckRequest;
 import com.goorm.BITA.domain.user.dto.request.EmailAuthCreateRequest;
+import com.goorm.BITA.domain.user.dto.response.EmailAuthCheckResponse;
+import com.goorm.BITA.domain.user.dto.response.EmailAuthCreateResponse;
 import com.goorm.BITA.domain.user.service.EmailAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,20 +16,20 @@ public class EmailAuthController {
 
     /* 인증을 위한 이메일 발송 */
     @PostMapping("/api/email-auth")
-    public ApiResponseDto<?> sendEmail(
+    public ApiResponseDto<EmailAuthCreateResponse> sendEmail(
             @RequestBody EmailAuthCreateRequest emailAuthCreateRequest
     ) {
-        long id = emailAuthService.saveEmailAuth(emailAuthCreateRequest.getEmail());
-        return ApiResponseDto.successResponse(id);
+        EmailAuthCreateResponse response = emailAuthService.saveEmailAuth(emailAuthCreateRequest.getEmail());
+        return ApiResponseDto.successResponse(response);
     }
 
     /* 이메일 인증 확인 */
     @GetMapping("/api/email-auth")
-    public ApiResponseDto checkEmailAuth(
+    public ApiResponseDto<EmailAuthCheckResponse> checkEmailAuth(
             @RequestBody EmailAuthCheckRequest emailAuthCheckRequest
             ) {
-        boolean isEmailAuth = emailAuthService.isEmailVerified(emailAuthCheckRequest);
-        return ApiResponseDto.successResponse(isEmailAuth);
+        EmailAuthCheckResponse response = emailAuthService.isEmailVerified(emailAuthCheckRequest);
+        return ApiResponseDto.successResponse(response);
     }
 
     /* 이메일 인증 완료

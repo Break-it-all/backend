@@ -2,6 +2,8 @@ package com.goorm.BITA.domain.user.service;
 
 import com.goorm.BITA.domain.user.domain.EmailAuth;
 import com.goorm.BITA.domain.user.dto.request.EmailAuthCheckRequest;
+import com.goorm.BITA.domain.user.dto.response.EmailAuthCheckResponse;
+import com.goorm.BITA.domain.user.dto.response.EmailAuthCreateResponse;
 import com.goorm.BITA.domain.user.repository.EmailAuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,13 +27,13 @@ public class EmailAuthService {
     private static final String ADMIN_EMAIL = "break.it.all.IDE@gmail.com";
 
     /* 인증을 위한 이메일 발송 */
-    public long saveEmailAuth(String email) {
+    public EmailAuthCreateResponse saveEmailAuth(String email) {
         EmailAuth emailAuth = new EmailAuth(email, UUID.randomUUID());
         emailAuthRepository.save(emailAuth);
 
         sendEmail(emailAuth.getEmail(), emailAuth.getEmailToken());
 
-        return emailAuth.getId();
+        return new EmailAuthCreateResponse(emailAuth.getEmail(), emailAuth.getId());
     }
 
     private void sendEmail(String email, UUID emailToken) {
@@ -78,7 +80,7 @@ public class EmailAuthService {
     }
 
     /* 이메일 인증 확인 */
-    public boolean isEmailVerified(EmailAuthCheckRequest emailAuthCheckRequest) {
+    public EmailAuthCheckResponse isEmailVerified(EmailAuthCheckRequest emailAuthCheckRequest) {
         EmailAuth emailAuth = emailAuthRepository.findById(emailAuthCheckRequest.getId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 아이디입니다."));
 
@@ -86,6 +88,6 @@ public class EmailAuthService {
             throw new RuntimeException("유효하지 않은 이메일입니다.");
         }
 
-        return emailAuth.isEmailVerified();
+        return new EmailAuthCheckResponse(emailAuth.getEmail(), emailAuth.isEmailVerified());
     }
 }
