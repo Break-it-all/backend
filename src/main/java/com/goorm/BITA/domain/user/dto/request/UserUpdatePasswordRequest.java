@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class UserUpdatePasswordRequest {
     private String email;
     private String password;
+    private long authId;
 }

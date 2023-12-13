@@ -24,7 +24,7 @@ public class EmailAuth {
     private boolean emailVerified = false;
     private LocalDateTime expiredAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user = null;
 
