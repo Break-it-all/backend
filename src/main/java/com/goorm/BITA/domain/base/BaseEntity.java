@@ -1,6 +1,6 @@
 package com.goorm.BITA.domain.base;
 
-import com.goorm.BITA.domain.user.User;
+import com.goorm.BITA.domain.user.domain.User;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
