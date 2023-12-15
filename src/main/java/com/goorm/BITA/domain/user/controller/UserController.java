@@ -2,6 +2,7 @@ package com.goorm.BITA.domain.user.controller;
 
 import com.goorm.BITA.api.response.ApiResponseDto;
 import com.goorm.BITA.common.enums.ResponseCode;
+import com.goorm.BITA.domain.user.UserDetailsImpl;
 import com.goorm.BITA.domain.user.dto.request.*;
 import com.goorm.BITA.domain.user.dto.response.UserSignInResponse;
 import com.goorm.BITA.domain.user.dto.response.UserResponse;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User", description = "사용자 관련 API Controller")
@@ -64,9 +67,11 @@ public class UserController {
     @PatchMapping("/update")
     public ApiResponseDto<UserResponse> updateUser(
             @Parameter(name = "회원정보 수정 요청 dto", description = "회원정보 수정 요청 dto입니다.")
-            @RequestBody UserUpdateInfoRequest userUpdateInfoRequest
+            @RequestBody UserUpdateInfoRequest userUpdateInfoRequest,
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
             ) {
-        UserResponse user = userService.updateUser(userUpdateInfoRequest);
+        UserResponse user = userService.updateUser(userUpdateInfoRequest, userDetails);
         return ApiResponseDto.successResponse(user);
     }
 
@@ -96,9 +101,26 @@ public class UserController {
     @DeleteMapping("/delete")
     public ApiResponseDto<?> deleteUser(
             @Parameter(name = "회원탈퇴 요청 dto", description = "회원탈퇴 요청 dto입니다.")
-            @RequestBody UserDeleteRequest userDeleteRequest
+            @RequestBody UserDeleteRequest userDeleteRequest,
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal UserDetailsImpl userDetails
             ) {
-        userService.deleteUser(userDeleteRequest);
+        userService.deleteUser(userDeleteRequest, userDetails);
         return ApiResponseDto.successWithoutDataResponse();
+    }
+
+    /* Token 재발급 */
+    @Tag(name = "User", description = "사용자 관련 API Controller")
+    @Operation(summary = "Access Token 재발급", description = "Access Token을 재발급한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 2000, message = "성공", response = UserSignInResponse.class),
+            @ApiResponse(code = 4001, message = "요청 값이 다름")
+    })
+    @GetMapping("/reissue-token")
+    public ApiResponseDto<UserSignInResponse> refreshToken(
+            @Parameter(name = "Refresh Token", description = "Refresh Token입니다.")
+            @RequestBody RefreshTokenRequest refreshToken
+            ) {
+        return ApiResponseDto.successResponse(userService.reissueToken(refreshToken));
     }
 }

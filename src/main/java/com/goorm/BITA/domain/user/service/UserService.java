@@ -1,5 +1,7 @@
 package com.goorm.BITA.domain.user.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
+import com.goorm.BITA.domain.user.UserDetailsImpl;
 import com.goorm.BITA.domain.user.domain.EmailAuth;
 import com.goorm.BITA.domain.user.domain.User;
 import com.goorm.BITA.domain.user.dto.request.*;
@@ -7,7 +9,15 @@ import com.goorm.BITA.domain.user.dto.response.UserSignInResponse;
 import com.goorm.BITA.domain.user.dto.response.UserResponse;
 import com.goorm.BITA.domain.user.repository.EmailAuthRepository;
 import com.goorm.BITA.domain.user.repository.UserRepository;
+import com.goorm.BITA.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,22 +25,31 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
-    final UserRepository userRepository;
-    final EmailAuthRepository emailAuthRepository;
+    private final UserRepository userRepository;
+    private final EmailAuthRepository emailAuthRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, String> redisTemplate;
 
     /* 회원가입 */
     public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
-        // TODO: Exception 처리
         if (userRepository.findByEmail(userSignUpRequest.getEmail()).isPresent()) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
 
         EmailAuth emailAuth = getEmailAuth(userSignUpRequest.getEmail(), userSignUpRequest.getAuthId());
 
-        User user = userRepository.save(userSignUpRequest.toEntity());
-        emailAuth.setUser(user);
+        User user = new User(
+                userSignUpRequest.getEmail(),
+                userSignUpRequest.getName(),
+                passwordEncoder.encode(userSignUpRequest.getPassword())
+        );
 
-        return UserResponse.toDto(user);
+        User savedUser = userRepository.save(user);
+        emailAuth.setUser(savedUser);
+
+        return UserResponse.toDto(savedUser);
     }
 
     private EmailAuth getEmailAuth(String email, long authId) {
@@ -50,21 +69,37 @@ public class UserService {
 
     /* 로그인 */
     public UserSignInResponse signin(UserSignInRequest userSignInRequest) {
-        // TODO: Exception 처리
         User user = userRepository.findByEmail(userSignInRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("해당 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
 
-        if (!user.getPassword().equals(userSignInRequest.getPassword())) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            userSignInRequest.getEmail(),
+                            userSignInRequest.getPassword()
+                    )
+            );
+
+            String accessToken = jwtTokenProvider.createAccessToken(authentication);
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+
+            return UserSignInResponse.toDto(
+                    user.getEmail(),
+                    user.getName(),
+                    accessToken,
+                    refreshToken
+            );
+        } catch (BadCredentialsException e) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException("로그인에 실패하였습니다.");
         }
-
-        return UserSignInResponse.toDto(user.getEmail(), user.getName());
     }
 
     /* 회원정보 수정 */
-    public UserResponse updateUser(UserUpdateInfoRequest userUpdateInfoRequest) {
+    public UserResponse updateUser(UserUpdateInfoRequest userUpdateInfoRequest, UserDetailsImpl userDetails) {
         // TODO: Exception 처리
-        User user = userRepository.findByEmail(userUpdateInfoRequest.getEmail())
+        User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("해당 유저가 존재하지 않습니다."));
         user.updateName(userUpdateInfoRequest.getName());
 
@@ -83,15 +118,40 @@ public class UserService {
     }
 
     /* 회원 탈퇴 */
-    public void deleteUser(UserDeleteRequest userDeleteRequest) {
+    public void deleteUser(UserDeleteRequest userDeleteRequest, UserDetailsImpl userDetails) {
         // TODO: Exception 처리
-        User user = userRepository.findByEmail(userDeleteRequest.getEmail())
+        User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("해당 유저가 존재하지 않습니다."));
 
-        if (!user.getPassword().equals(userDeleteRequest.getPassword())) {
+        if (!passwordEncoder.matches(userDeleteRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
         userRepository.delete(user);
+    }
+
+    /* Token 재발급 */
+    public UserSignInResponse reissueToken (RefreshTokenRequest refreshTokenRequest) {
+        String refreshToken = refreshTokenRequest.getRefreshToken();
+
+        jwtTokenProvider.validateToken(refreshToken);
+
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+
+        String redisRefreshToken = redisTemplate.opsForValue().get(authentication.getName());
+        if (!refreshToken.equals(redisRefreshToken)) {
+            throw new RuntimeException("유효하지 않은 Refresh Token 입니다.");
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        UserSignInResponse userSignInResponse = UserSignInResponse.toDto(
+                userDetails.getUsername(),
+                userDetails.getName(),
+                jwtTokenProvider.createAccessToken(authentication),
+                jwtTokenProvider.createRefreshToken(authentication)
+        );
+
+        return userSignInResponse;
     }
 }
