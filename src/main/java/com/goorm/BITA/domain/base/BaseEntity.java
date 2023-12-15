@@ -16,10 +16,12 @@ import lombok.Setter;
 @Setter(AccessLevel.PROTECTED)
 public abstract class BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CREATED_BY_USER_ID", nullable = false)
+//    @JoinColumn(name = "CREATED_BY_USER_ID", nullable = false)
+    @JoinColumn(name = "CREATED_BY_USER_ID")
     private User createdBy;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UPDATED_BY_USER_ID", nullable = false)
+//    @JoinColumn(name = "UPDATED_BY_USER_ID", nullable = false)
+    @JoinColumn(name = "UPDATED_BY_USER_ID")
     private User updatedBy;
     @Column(nullable = false)
     private LocalDateTime createdAt;
