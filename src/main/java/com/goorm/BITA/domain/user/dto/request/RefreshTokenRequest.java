@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserDeleteRequest {
-    private String password;
+public class RefreshTokenRequest {
+    private String refreshToken;
 }

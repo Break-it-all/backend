@@ -34,6 +34,10 @@ public class ApiResponseDto<T> {
         return new ApiResponseDto<>(code.getCode(), null, code.getMessage());
     }
 
+    public static ApiResponseDto<?> exceptionResponse(ResponseCode code, String message) {
+        return new ApiResponseDto<>(code.getCode(), null, message);
+    }
+
     public static ApiResponseDto<?> failResponse(BindingResult bindingResult) {
         Map<String, String> errors = new HashMap<>();
 

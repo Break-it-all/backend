@@ -45,7 +45,7 @@ public class EmailAuthService {
             String url = "http://localhost:8080/email-auth/verify?emailToken=" + emailToken;
             String messageText =
                     "<div style=\"font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; padding: 3em\">\n" +
-                            "<div style=\"display:flex; flex-direction:column; align-items:center; gap: 1em; padding: 3em; width: 100%; height: 100%; box-shadow: 0px 0px 1em 0px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 2em; text-align: center;\"" +
+                            "<div style=\"display:flex; flex-direction:column; align-items:center; gap: 1em; padding: 3em; width: 100%; height: 100%; box-shadow: 0px 0px 1em 0px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 2em; text-align: center;\">" +
                             "<h1>BITA IDE 이메일 인증</h1>\n" +
                             "<p>이메일 인증을 위해 아래의 <strong>인증하기</strong> 버튼을 눌러주세요.</p>\n" +
                             "<a href=" + url + " style=\"width: 6em; padding: 0.5em 1em; border: none; background: darkturquoise; border-radius: 1em; color: white; text-decoration: none;\">인증하기</a>\n" +
