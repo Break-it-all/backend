@@ -14,13 +14,13 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @Slf4j
 public class MessageController {
-    private SimpMessagingTemplate template;
+    private final SimpMessagingTemplate template;
     @MessageMapping("/messages/{roomId}")
     public void addPlayers(@DestinationVariable long roomId) {
         template.convertAndSend("/sub/messages"+roomId);
     }
 
-    @MessageMapping("/messages/{roomId}")
+    @MessageMapping("/messages/{roomId}/test")
     public void addPlayer(@DestinationVariable long roomId, @Payload String sdp) {
         template.convertAndSend("/sub/messages"+roomId, sdp);
     }
