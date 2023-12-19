@@ -1,5 +1,7 @@
 package com.goorm.BITA.domain.user.domain;
 
+import com.goorm.BITA.domain.container.domain.ContainerUser;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,9 @@ public class User {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user")
+    private List<ContainerUser> containerUsers;
 
     public User(String email, String name, String password) {
         this.email = email;

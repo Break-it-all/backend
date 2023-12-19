@@ -92,6 +92,7 @@ public class UserService {
         } catch (BadCredentialsException e) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("로그인에 실패하였습니다.");
         }
     }

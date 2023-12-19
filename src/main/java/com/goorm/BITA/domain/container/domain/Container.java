@@ -1,4 +1,4 @@
-package com.goorm.BITA.domain.container;
+package com.goorm.BITA.domain.container.domain;
 
 import static javax.persistence.EnumType.*;
 
@@ -7,7 +7,9 @@ import com.goorm.BITA.common.enums.ContainerLanguage;
 import com.goorm.BITA.common.enums.ContainerMode;
 import com.goorm.BITA.domain.base.BaseEntity;
 import com.goorm.BITA.domain.folder.Folder;
-import java.time.LocalDateTime;
+import com.goorm.BITA.domain.user.domain.User;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,7 +20,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -44,34 +45,45 @@ public class Container extends BaseEntity {
     // 양방향
     @OneToMany(mappedBy = "container", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Folder> folders;
+    private List<Folder> folders = new ArrayList<>();
 
     private String description;
-    private LocalDateTime isDeletedAt;
+    private ZonedDateTime deletedAt;
 
-    private Container(String name, ContainerMode mode, ContainerLanguage language, String description, LocalDateTime now) {
-        //TODO 유저 추가하기
+    @OneToMany(mappedBy = "container")
+    private List<ContainerUser> containerUsers = new ArrayList<>();
+
+    private Container(String name, ContainerMode mode, ContainerLanguage language, String description, ZonedDateTime now, User user) {
         this.name = name;
         this.mode = mode.getMode();
         this.language = language;
         this.description = description;
-        this.setCreatedBy(null);
-        this.setUpdatedBy(null);
+        this.setCreatedBy(user);
+        this.setUpdatedBy(user);
         this.setCreatedAt(now);
         this.setUpdatedAt(now);
     }
 
-    public static Container createContainer(String name, ContainerMode mode, ContainerLanguage language, String description, LocalDateTime now) {
-        return new Container(name, mode, language, description, now);
+    public static Container createContainer(String name, ContainerMode mode, ContainerLanguage language, String description, ZonedDateTime now, User user) {
+        return new Container(name, mode, language, description, now, user);
     }
 
-    public void update(String name) {
+    public void update(String name, User user) {
         this.name = name;
-        this.setUpdatedAt(LocalDateTime.now());
+        this.setUpdatedAt(ZonedDateTime.now());
+        this.setUpdatedBy(user);
     }
 
     // 연관관계 편의 메서드
     public void addFolder(Folder folder) {
         this.folders.add(folder);
+    }
+
+    public boolean isUser(User user) {
+        return containerUsers.stream().anyMatch(containerUser -> containerUser.getUser().equals(user));
+    }
+
+    public void addContainerUser(ContainerUser containerUser) {
+        this.containerUsers.add(containerUser);
     }
 }

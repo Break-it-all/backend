@@ -5,9 +5,9 @@ import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.goorm.BITA.domain.base.BaseEntity;
-import com.goorm.BITA.domain.container.Container;
+import com.goorm.BITA.domain.container.domain.Container;
 import com.goorm.BITA.domain.file.File;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -56,9 +56,9 @@ public class Folder extends BaseEntity {
     @JsonManagedReference
     private List<File> files;
 
-    private LocalDateTime isDeletedAt;
+    private ZonedDateTime deletedAt;
 
-    public Folder(String name, Container container, Folder parentFolder, LocalDateTime now) {
+    public Folder(String name, Container container, Folder parentFolder, ZonedDateTime now) {
         this.name = name;
         this.container = container;
         this.parentFolder = parentFolder;
@@ -69,11 +69,11 @@ public class Folder extends BaseEntity {
     }
 
     public static Folder createRootFolder(String name, Container container) {
-        return new Folder(name, container, null, LocalDateTime.now());
+        return new Folder(name, container, null, ZonedDateTime.now());
     }
 
     public static Folder createSubFolder(String name, Container container, Folder parentFolder) {
-        return new Folder(name, container, parentFolder, LocalDateTime.now());
+        return new Folder(name, container, parentFolder, ZonedDateTime.now());
     }
 
     // 파일 연관관계 편의 메서드
@@ -83,6 +83,6 @@ public class Folder extends BaseEntity {
 
     public void updateName(String name) {
         this.name = name;
-        this.setUpdatedAt(LocalDateTime.now());
+        this.setUpdatedAt(ZonedDateTime.now());
     }
 }

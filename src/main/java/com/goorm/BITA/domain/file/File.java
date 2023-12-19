@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.goorm.BITA.domain.base.BaseEntity;
 import com.goorm.BITA.domain.folder.Folder;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,7 +35,7 @@ public class File extends BaseEntity {
     private Long id;
     private String name;
     private String url;
-    private LocalDateTime isDeletedAt;
+    private ZonedDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
@@ -42,7 +43,7 @@ public class File extends BaseEntity {
     private Folder folder;
 
     public File(String name, String url, Folder folder) {
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         this.name = name;
         this.url = url;
         this.folder = folder;
@@ -56,7 +57,7 @@ public class File extends BaseEntity {
         return new File(name, url, folder);
     }
 
-    public void updateUpdatedAt(LocalDateTime now) {
+    public void updateUpdatedAt(ZonedDateTime now) {
         this.setUpdatedAt(now);
     }
 }
