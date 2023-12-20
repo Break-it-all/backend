@@ -1,7 +1,7 @@
 package com.goorm.BITA.domain.folder;
 
-import com.goorm.BITA.domain.container.Container;
-import com.goorm.BITA.domain.container.ContainerRepository;
+import com.goorm.BITA.domain.container.domain.Container;
+import com.goorm.BITA.domain.container.repository.ContainerRepository;
 import com.goorm.BITA.domain.folder.dto.request.FolderCreateRequestDto;
 import com.goorm.BITA.domain.folder.dto.request.FolderUpdateRequestDto;
 import com.goorm.BITA.domain.folder.dto.response.FolderResponseDto;
@@ -26,6 +26,7 @@ public class FolderService {
             .orElseThrow(() -> new RuntimeException("컨테이너가 존재하지 않습니다."));
 
         Folder folder;
+        // TODO Anti-pattern 수정
         if (parentFolderId == null) {
             folder = Folder.createRootFolder(name, container);
         } else {

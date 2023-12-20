@@ -1,9 +1,8 @@
-package com.goorm.BITA.domain.container.dto;
+package com.goorm.BITA.domain.container.dto.request;
 
 import com.goorm.BITA.common.enums.ContainerLanguage;
 import com.goorm.BITA.common.enums.ContainerMode;
-import com.goorm.BITA.domain.container.Container;
-import java.time.LocalDateTime;
+import com.goorm.BITA.domain.container.info.CreateContainerInfo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,11 +16,9 @@ public class ContainerCreateRequestDto {
     private ContainerMode mode;
     private ContainerLanguage language;
     private String description;
+    private Long userId;
 
-    public Container from() {
-        LocalDateTime now = LocalDateTime.now();
-        return Container.createContainer(name, mode, language, description, now);
+    public CreateContainerInfo toCreateContainerInfo(Long userId) {
+        return new CreateContainerInfo(name, mode, language, description, userId);
     }
 }
-
-

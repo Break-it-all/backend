@@ -1,9 +1,9 @@
 package com.goorm.BITA.domain.folder.dto.response;
 
+import com.goorm.BITA.domain.file.dto.reponse.FileResponseDto;
 import com.goorm.BITA.domain.folder.Folder;
-import com.goorm.BITA.domain.user.domain.User;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,15 +13,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FolderResponseDto {
+    private Long folderId;
     private String name;
-    private LocalDateTime updatedAt;
-    private User createdBy;
-    private User updatedBy;
-    private Folder parentFolder;
-    private List<Folder> subFolders;
-
+    // null
+    private List<FolderResponseDto> subFolders;
+    private List<FileResponseDto> files;
 
     public static FolderResponseDto toDto(Folder folder) {
-        return new FolderResponseDto(folder.getName(), folder.getUpdatedAt(), folder.getCreatedBy(), folder.getUpdatedBy(), folder.getParentFolder(), folder.getSubFolders());
+        List<FolderResponseDto> subFolderDtos = folder.getSubFolders().stream()
+            .map(FolderResponseDto::toDto)
+            .collect(Collectors.toList());
+        List<FileResponseDto> fileDtos = folder.getFiles().stream()
+            .map(FileResponseDto::toDto)
+            .collect(Collectors.toList());
+
+        return new FolderResponseDto(folder.getId(), folder.getName(), subFolderDtos, fileDtos);
     }
 }
