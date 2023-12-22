@@ -48,9 +48,10 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/user/signup", "/api/user/signin",
+                .antMatchers("/api/user/signup", "/api/user/signin", "api/user/signout",
                         "/api/user/reset-password", "/api/user/reissue-token").permitAll()
                 .antMatchers("/api/email-auth/**").permitAll()
+//                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
@@ -66,14 +67,11 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
-        // TODO: CORS 허용할 Origin 설정
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedOriginPattern("*"); // 모든 출처를 패턴으로 허용
+        corsConfiguration.setAllowCredentials(true); // 크로스 도메인 요청에서 쿠키를 지원
         corsConfiguration.setMaxAge(3600L);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
-
         return source;
     }
 }

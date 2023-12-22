@@ -1,10 +1,10 @@
 package com.goorm.BITA.domain.user.controller;
 
 import com.goorm.BITA.api.response.ApiResponseDto;
-import com.goorm.BITA.common.enums.ResponseCode;
 import com.goorm.BITA.domain.user.UserDetailsImpl;
 import com.goorm.BITA.domain.user.dto.request.*;
-import com.goorm.BITA.domain.user.dto.response.UserSignInResponse;
+import com.goorm.BITA.domain.user.dto.response.UserSignInResponseDto;
+import com.goorm.BITA.domain.user.dto.response.UserSignInResponseInfo;
 import com.goorm.BITA.domain.user.dto.response.UserResponse;
 import com.goorm.BITA.domain.user.service.UserService;
 
@@ -14,9 +14,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @Tag(name = "User", description = "사용자 관련 API Controller")
 @RestController
@@ -45,17 +47,44 @@ public class UserController {
     @Tag(name = "User", description = "사용자 관련 API Controller")
     @Operation(summary = "로그인", description = "로그인을 수행한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 2000, message = "성공", response = UserSignInResponse.class),
+            @ApiResponse(code = 2000, message = "성공", response = UserSignInResponseInfo.class),
             @ApiResponse(code = 4001, message = "요청 값이 다름")
     })
     @PostMapping("/signin")
-    public ApiResponseDto<UserSignInResponse> signin(
+    public ApiResponseDto<UserSignInResponseDto> signin(
             @Parameter(name = "로그인 요청 dto", description = "로그인 요청 dto입니다.")
-            @RequestBody UserSignInRequest userSignInRequest
+            @RequestBody UserSignInRequest userSignInRequest,
+            HttpServletResponse response
             ) {
-        UserSignInResponse user = userService.signin(userSignInRequest);
-        return ApiResponseDto.successResponse(user);
+        UserSignInResponseInfo user = userService.signin(userSignInRequest);
+
+        System.out.println("user.getRefreshToken() = " + user.getRefreshToken());
+        System.out.println("user.getAccessToken() = " + user.getAccessToken());
+
+        Cookie cookie = new Cookie("refreshToken", user.getRefreshToken());
+        cookie.setMaxAge(60 * 60 * 24 * 14);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
+        return ApiResponseDto.successResponse(UserSignInResponseDto.toDto(user));
     }
+
+
+    /* 로그아웃 */
+    @PostMapping("/signout")
+    public ApiResponseDto<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
+        return ApiResponseDto.successWithoutDataResponse();
+    }
+
 
     /* 회원정보 수정 */
     @Tag(name = "User", description = "사용자 관련 API Controller")
@@ -113,14 +142,25 @@ public class UserController {
     @Tag(name = "User", description = "사용자 관련 API Controller")
     @Operation(summary = "Access Token 재발급", description = "Access Token을 재발급한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 2000, message = "성공", response = UserSignInResponse.class),
+            @ApiResponse(code = 2000, message = "성공", response = UserSignInResponseInfo.class),
             @ApiResponse(code = 4001, message = "요청 값이 다름")
     })
     @GetMapping("/reissue-token")
-    public ApiResponseDto<UserSignInResponse> refreshToken(
-            @Parameter(name = "Refresh Token", description = "Refresh Token입니다.")
-            @RequestBody RefreshTokenRequest refreshToken
+    public ApiResponseDto<UserSignInResponseDto> refreshToken(
+//            @Parameter(name = "Refresh Token", description = "Refresh Token입니다.")
+//            @RequestBody RefreshTokenRequest refreshToken
+            @CookieValue(value = "refreshToken") String refreshToken,
+            HttpServletResponse response
             ) {
-        return ApiResponseDto.successResponse(userService.reissueToken(refreshToken));
+        UserSignInResponseInfo info = userService.reissueToken(refreshToken);
+
+        Cookie cookie = new Cookie("refreshToken", info.getRefreshToken());
+        cookie.setMaxAge(60 * 60 * 24 * 14);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
+        return ApiResponseDto.successResponse(UserSignInResponseDto.toDto(info));
     }
 }

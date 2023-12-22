@@ -1,11 +1,10 @@
 package com.goorm.BITA.domain.user.service;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.goorm.BITA.domain.user.UserDetailsImpl;
 import com.goorm.BITA.domain.user.domain.EmailAuth;
 import com.goorm.BITA.domain.user.domain.User;
 import com.goorm.BITA.domain.user.dto.request.*;
-import com.goorm.BITA.domain.user.dto.response.UserSignInResponse;
+import com.goorm.BITA.domain.user.dto.response.UserSignInResponseInfo;
 import com.goorm.BITA.domain.user.dto.response.UserResponse;
 import com.goorm.BITA.domain.user.repository.EmailAuthRepository;
 import com.goorm.BITA.domain.user.repository.UserRepository;
@@ -16,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +32,7 @@ public class UserService {
 
     /* 회원가입 */
     public UserResponse saveUser(UserSignUpRequest userSignUpRequest) {
+        System.out.println("userSignUpRequest = " + userSignUpRequest);
         if (userRepository.findByEmail(userSignUpRequest.getEmail()).isPresent()) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
@@ -68,7 +67,7 @@ public class UserService {
     }
 
     /* 로그인 */
-    public UserSignInResponse signin(UserSignInRequest userSignInRequest) {
+    public UserSignInResponseInfo signin(UserSignInRequest userSignInRequest) {
         User user = userRepository.findByEmail(userSignInRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
 
@@ -83,7 +82,7 @@ public class UserService {
             String accessToken = jwtTokenProvider.createAccessToken(authentication);
             String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-            return UserSignInResponse.toDto(
+            return UserSignInResponseInfo.toInfo(
                     user.getEmail(),
                     user.getName(),
                     accessToken,
@@ -115,7 +114,7 @@ public class UserService {
         EmailAuth emailAuth = getEmailAuth(userUpdatePasswordRequest.getEmail(), userUpdatePasswordRequest.getAuthId());
         emailAuth.setUser(user);
 
-        user.updatePassword(userUpdatePasswordRequest.getPassword());
+        user.updatePassword(passwordEncoder.encode(userUpdatePasswordRequest.getPassword()));
     }
 
     /* 회원 탈퇴 */
@@ -132,13 +131,12 @@ public class UserService {
     }
 
     /* Token 재발급 */
-    public UserSignInResponse reissueToken (RefreshTokenRequest refreshTokenRequest) {
-        String refreshToken = refreshTokenRequest.getRefreshToken();
-
+    public UserSignInResponseInfo reissueToken (String refreshToken) {
         jwtTokenProvider.validateToken(refreshToken);
 
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
 
+        System.out.println("refreshToken = " + refreshToken);
         String redisRefreshToken = redisTemplate.opsForValue().get(authentication.getName());
         if (!refreshToken.equals(redisRefreshToken)) {
             throw new RuntimeException("유효하지 않은 Refresh Token 입니다.");
@@ -146,13 +144,13 @@ public class UserService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        UserSignInResponse userSignInResponse = UserSignInResponse.toDto(
+        UserSignInResponseInfo userSignInResponseInfo = UserSignInResponseInfo.toInfo(
                 userDetails.getUsername(),
                 userDetails.getName(),
                 jwtTokenProvider.createAccessToken(authentication),
                 jwtTokenProvider.createRefreshToken(authentication)
         );
 
-        return userSignInResponse;
+        return userSignInResponseInfo;
     }
 }

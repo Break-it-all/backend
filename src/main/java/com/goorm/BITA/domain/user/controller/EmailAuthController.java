@@ -9,6 +9,8 @@ import com.goorm.BITA.domain.user.service.EmailAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/email-auth")
@@ -27,9 +29,10 @@ public class EmailAuthController {
     /* 이메일 인증 확인 */
     @GetMapping
     public ApiResponseDto<EmailAuthCheckResponse> checkEmailAuth(
-            @RequestBody EmailAuthCheckRequest emailAuthCheckRequest
+            @RequestParam String email,
+            @RequestParam long id
             ) {
-        EmailAuthCheckResponse response = emailAuthService.isEmailVerified(emailAuthCheckRequest);
+        EmailAuthCheckResponse response = emailAuthService.isEmailVerified(email, id);
         return ApiResponseDto.successResponse(response);
     }
 
