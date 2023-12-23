@@ -21,8 +21,8 @@ public class FileController {
     // 파일 생성
     @PostMapping("/folder/{folderId}/file")
     public ApiResponseDto<FileResponseDto> createFile(
-        @ModelAttribute FileCreateRequestDto requestDto,
-        @PathVariable Long folderId
+            @ModelAttribute FileCreateRequestDto requestDto,
+            @PathVariable Long folderId
     ) {
         CreateRequestFileInfo fileRequestInfo = new CreateRequestFileInfo(requestDto.getName(), requestDto.getLanguage(), folderId);
         CreateResponseFileInfo fileResponseInfo = fileService.createFile(fileRequestInfo);
@@ -33,8 +33,8 @@ public class FileController {
     // 파일 저장 s3에 올리기
     @PutMapping("/file/{fileId}")
     public ApiResponseDto<?> updateFile(
-        @PathVariable Long fileId,
-        @RequestBody FileUpdateRequestDto requestDto
+            @PathVariable Long fileId,
+            @RequestBody FileUpdateRequestDto requestDto
     ) {
         SaveRequestFileInfo fileRequestInfo = new SaveRequestFileInfo(fileId, requestDto.getContent());
         fileService.updateFile(fileRequestInfo);
