@@ -42,7 +42,7 @@ public class EmailAuthService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             // TODO: 이메일 링크 프론트엔드 주소로 변경
-            String url = "http://localhost:8080/email-auth/verify?emailToken=" + emailToken;
+            String url = "http://localhost:3000/email-auth/verify?emailToken=" + emailToken;
             String messageText =
                     "<div style=\"font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; padding: 3em\">\n" +
                             "<div style=\"display:flex; flex-direction:column; align-items:center; gap: 1em; padding: 3em; width: 100%; height: 100%; box-shadow: 0px 0px 1em 0px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 2em; text-align: center;\">" +
@@ -81,11 +81,11 @@ public class EmailAuthService {
     }
 
     /* 이메일 인증 확인 */
-    public EmailAuthCheckResponse isEmailVerified(EmailAuthCheckRequest emailAuthCheckRequest) {
-        EmailAuth emailAuth = emailAuthRepository.findById(emailAuthCheckRequest.getId())
+    public EmailAuthCheckResponse isEmailVerified(String email, long id) {
+        EmailAuth emailAuth = emailAuthRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 아이디입니다."));
 
-        if (!emailAuth.getEmail().equals(emailAuthCheckRequest.getEmail())) {
+        if (!emailAuth.getEmail().equals(email)) {
             throw new RuntimeException("유효하지 않은 이메일입니다.");
         }
 

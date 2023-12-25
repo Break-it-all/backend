@@ -8,13 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserSignInResponse {
+public class UserSignInResponseDto {
     private String email;
     private String name;
     private String accessToken;
-    private String refreshToken;
 
-    public static UserSignInResponse toDto(String email, String name, String accessToken, String refreshToken) {
-        return new UserSignInResponse(email, name, accessToken, refreshToken);
+    public static UserSignInResponseDto toDto(UserSignInResponseInfo userSignInResponseInfo) {
+        return new UserSignInResponseDto(userSignInResponseInfo.getEmail(), userSignInResponseInfo.getName(), userSignInResponseInfo.getAccessToken());
     }
 }
