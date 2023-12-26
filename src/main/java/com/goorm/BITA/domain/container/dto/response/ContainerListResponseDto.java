@@ -2,6 +2,7 @@ package com.goorm.BITA.domain.container.dto.response;
 
 import com.goorm.BITA.common.enums.ContainerLanguage;
 import com.goorm.BITA.domain.container.domain.Container;
+import java.time.ZonedDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,9 @@ public class ContainerListResponseDto {
     private String mode;
     private ContainerLanguage language;
     private String description;
+    private ZonedDateTime createdAt;
 
     public static ContainerListResponseDto from(Container container) {
-        return new ContainerListResponseDto(container.getId(), container.getName(), container.getMode(), container.getLanguage(), container.getDescription());
+        return new ContainerListResponseDto(container.getId(), container.getName(), container.getMode(), container.getLanguage(), container.getDescription(), container.getCreatedAt());
     }
 }
