@@ -28,7 +28,7 @@ import org.hibernate.annotations.Where;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@SQLDelete(sql = "UPDATE container SET is_deleted_at = NOW() WHERE container_id = ?")
+@SQLDelete(sql = "UPDATE container SET deleted_at = NOW() WHERE container_id = ?")
 @Where(clause = "is_deleted_at is null")
 public class Container extends BaseEntity {
     @Id
