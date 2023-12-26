@@ -83,6 +83,7 @@ public class UserService {
             String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
             return UserSignInResponseInfo.toInfo(
+                    user.getId(),
                     user.getEmail(),
                     user.getName(),
                     accessToken,
@@ -145,6 +146,7 @@ public class UserService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         UserSignInResponseInfo userSignInResponseInfo = UserSignInResponseInfo.toInfo(
+                userDetails.getUserId(),
                 userDetails.getUsername(),
                 userDetails.getName(),
                 jwtTokenProvider.createAccessToken(authentication),
