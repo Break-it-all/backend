@@ -27,12 +27,11 @@ public class EmailAuthController {
     }
 
     /* 이메일 인증 확인 */
-    @GetMapping
+    @PostMapping("/check")
     public ApiResponseDto<EmailAuthCheckResponse> checkEmailAuth(
-            @RequestParam String email,
-            @RequestParam long id
+            @RequestBody EmailAuthCheckRequest emailAuthCheckRequest
             ) {
-        EmailAuthCheckResponse response = emailAuthService.isEmailVerified(email, id);
+        EmailAuthCheckResponse response = emailAuthService.isEmailVerified(emailAuthCheckRequest.getEmail(), emailAuthCheckRequest.getId());
         return ApiResponseDto.successResponse(response);
     }
 
