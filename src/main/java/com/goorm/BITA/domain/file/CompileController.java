@@ -4,10 +4,7 @@ import com.goorm.BITA.api.response.ApiResponseDto;
 import com.goorm.BITA.domain.file.dto.CompileRequest;
 import com.goorm.BITA.domain.file.dto.CompileResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/file/compile")
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompileController {
     private final CompileService compileService;
 
-    @GetMapping
+    @PostMapping
     public ApiResponseDto<CompileResponse> compileFile(
             @RequestBody CompileRequest request
     ) {

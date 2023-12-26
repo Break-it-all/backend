@@ -23,8 +23,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @OnDelete(action = CASCADE)
-@SQLDelete(sql = "UPDATE file SET is_deleted_at = NOW() WHERE file_id = ?")
-@Where(clause = "is_deleted_at is null")
+@SQLDelete(sql = "UPDATE file SET deleted_at = NOW() WHERE file_id = ?")
+@Where(clause = "deleted_at is null")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
