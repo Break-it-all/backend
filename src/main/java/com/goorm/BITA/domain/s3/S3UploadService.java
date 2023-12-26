@@ -23,12 +23,17 @@ public class S3UploadService {
 
     public String uploadFile(Long folderId) {
         String key = "container/" + folderId + "_" + Instant.now().toEpochMilli();
+        byte[] emptyContent = new byte[0];
+        ByteArrayInputStream emptyContentStream = new ByteArrayInputStream(emptyContent);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(0);
+        metadata.setContentType("text/plain");
+        amazonS3.putObject(bucket, key, emptyContentStream, metadata);
         return amazonS3.getUrl(bucket, key).toString();
     }
 
     public void updateFileContentInS3(String fileUrl, String newContent) {
         String fileKey = extractFileKeyFromUrl(fileUrl);
-
         ObjectMetadata metadata = new ObjectMetadata();
         byte[] contentAsBytes = newContent.getBytes(StandardCharsets.UTF_8);
         ByteArrayInputStream contentAsStream = new ByteArrayInputStream(contentAsBytes);

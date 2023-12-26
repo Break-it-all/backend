@@ -13,13 +13,12 @@ import lombok.NoArgsConstructor;
 public class FileResponseDto {
     private Long fileId;
     private String name;
-    private String url;
 
     public static FileResponseDto toDto(File file) {
-        return new FileResponseDto(file.getId(), file.getName(), file.getUrl());
+        return new FileResponseDto(file.getId(), file.getName());
     }
 
     public static FileResponseDto toDto(CreateResponseFileInfo file) {
-        return new FileResponseDto(file.getFileId(), file.getName(), file.getUrl());
+        return new FileResponseDto(file.getFileId(), file.getName());
     }
 }

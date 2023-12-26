@@ -13,5 +13,4 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class FileCreateRequestDto {
     private String name;
-    private ContainerLanguage language;
 }

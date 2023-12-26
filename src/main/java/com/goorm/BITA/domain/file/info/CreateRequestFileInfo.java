@@ -13,6 +13,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class CreateRequestFileInfo {
     private String name;
-    private ContainerLanguage language;
     private Long folderId;
 }

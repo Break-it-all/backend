@@ -24,7 +24,7 @@ public class FileController {
             @ModelAttribute FileCreateRequestDto requestDto,
             @PathVariable Long folderId
     ) {
-        CreateRequestFileInfo fileRequestInfo = new CreateRequestFileInfo(requestDto.getName(), requestDto.getLanguage(), folderId);
+        CreateRequestFileInfo fileRequestInfo = new CreateRequestFileInfo(requestDto.getName(), folderId);
         CreateResponseFileInfo fileResponseInfo = fileService.createFile(fileRequestInfo);
         FileResponseDto fileResponseDto = FileResponseDto.toDto(fileResponseInfo);
         return ApiResponseDto.successResponse(fileResponseDto);
