@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .antMatchers("/api/user/signup", "/api/user/signin", "api/user/signout",
                         "/api/user/reset-password", "/api/user/reissue-token").permitAll()
                 .antMatchers("/api/email-auth/**").permitAll()
+                .antMatchers("/signaling/**").permitAll()
+
 //                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
 
