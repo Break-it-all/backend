@@ -10,8 +10,9 @@ import lombok.Data;
 public class ContainerUserResponseDto {
     private Long userId;
     private UserRole role;
+    private String name;
 
     public static ContainerUserResponseDto from(ContainerUser containerUser) {
-        return new ContainerUserResponseDto(containerUser.getUser().getId(), containerUser.getRole());
+        return new ContainerUserResponseDto(containerUser.getUser().getId(), containerUser.getRole(), containerUser.getUser().getName());
     }
 }
