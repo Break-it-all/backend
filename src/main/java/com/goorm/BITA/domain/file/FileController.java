@@ -21,7 +21,7 @@ public class FileController {
     // 파일 생성
     @PostMapping("/folder/{folderId}/file")
     public ApiResponseDto<FileResponseDto> createFile(
-            @ModelAttribute FileCreateRequestDto requestDto,
+            @RequestBody FileCreateRequestDto requestDto,
             @PathVariable Long folderId
     ) {
         CreateRequestFileInfo fileRequestInfo = new CreateRequestFileInfo(requestDto.getName(), folderId);
