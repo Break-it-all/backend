@@ -16,3 +16,4 @@ public class ContainerUserResponseDto {
         return new ContainerUserResponseDto(containerUser.getUser().getId(), containerUser.getRole(), containerUser.getUser().getName());
     }
 }
+

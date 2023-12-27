@@ -5,5 +5,5 @@ import lombok.Getter;
 
 @Getter
 public enum ContainerLanguage {
-    java, python, cpp, js
+    java, py, cpp, js
 }
